@@ -1,5 +1,21 @@
-To create a VPC:
+To create a VPC with a publicly accessible SSH bastion:
 
-TF_VAR_ALLOWED_SSH=0.0.0.0/0 TF_VAR_CIDR_BLOCK=16 terraform apply .
+```
+TF_VAR_ALLOWED_SSH=0.0.0.0/0 \
+TF_VAR_CIDR_BLOCK=30 \
+TF_VAR_CREATE_BASTION=true \
+TF_VAR_SSH_KEY=mykey \
+terraform apply .
+```
 
-You can also override the TF_VAR_environment and TF_VAR_org environment variables to create your own environment / organization labels..
+If SSH ain't your thing:
+
+```
+terraform apply .
+```
+
+There are a few other environment variables
+
+##SSH Keys
+
+I didn't deal with SSH keys because they look clunky with terraform (for right now).  Just generate a key pair in the EC2 management console called "bootstrap."

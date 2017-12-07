@@ -1,8 +1,14 @@
 # Variables imported as TF_VAR_*
-variable "CIDR_BLOCK" { default = "16" }
 variable "environment" { default = "dev" }
 variable "org" { default = "ivytech" }
+variable "CIDR_BLOCK" { default = "16" }
+
+# SSH bastion related variablee
+variable "CREATE_BASTION" { default = false }
 variable "ALLOWED_SSH" { default = "127.0.0.1/32" }
+variable "SSH_KEY" { default = "bootstrap" }
+
+####################################################
 
 resource "aws_vpc" "main" {
   cidr_block = "172.${var.CIDR_BLOCK}.0.0/16"
@@ -171,5 +177,21 @@ resource "aws_security_group" "private" {
   }
   tags {
     Name = "private_sg"
+  }
+}
+
+# SSH bastion, if $TF_VAR_CREATE_BASTION is true
+
+resource "aws_instance" "bastion" {
+  count = "${var.CREATE_BASTION == "true" ? 1 : 0 }"
+  ami = "${data.aws_ami.amazon.id}"
+  instance_type = "t2.micro"
+  key_name = "${var.SSH_KEY}"
+  security_groups = [ "${aws_security_group.ssh.id}" ]
+  subnet_id = "${element(aws_subnet.public.*.id, count.index)}"
+  associate_public_ip_address = true
+  tags {
+    Name = "bastion_ec2_instance"
+    Environment = "${var.environment}"
   }
 }
