@@ -1,21 +1,20 @@
-To create a VPC with a publicly accessible SSH bastion:
+## Getting started
+
+This project assumes you have a shared account with an S3 bucket to hold terraform remote state files.  To create such a bucket, run:
 
 ```
-TF_VAR_ALLOWED_SSH=0.0.0.0/0 \
-TF_VAR_CIDR_BLOCK=30 \
-TF_VAR_CREATE_BASTION=true \
-TF_VAR_SSH_KEY=mykey \
-terraform apply .
+bundle install
+bundle exec state/create_buckets.rb
 ```
 
-If SSH ain't your thing:
+You should only need to do this once.
+
+## Initializing projects
+
+For each project, change into the project directory, then run:
 
 ```
-terraform apply .
+../state/create_backend.sh
+terraform init
+terraform workspace new $environment
 ```
-
-There are a few other environment variables
-
-##SSH Keys
-
-I didn't deal with SSH keys because they look clunky with terraform (for right now).  Just generate a key pair in the EC2 management console called "bootstrap."
