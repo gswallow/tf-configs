@@ -54,7 +54,6 @@ resource "aws_security_group" "private" {
 }
 
 resource "aws_security_group" "ssh" {
-  count = "${var.CREATE_BASTION == "true" ? 1 : 0 }"
   name = "default_ssh"
   description = "Allow SSH from specified CIDR blocks"
   vpc_id = "${aws_vpc.main.id}"

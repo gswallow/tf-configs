@@ -1,6 +1,5 @@
 # Variables imported as TF_VAR_*
-variable "environment" { default = "dev" }
-variable "org" { default = "ivytech" }
+variable "ORG" { default = "ivytech" }
 variable "CIDR_BLOCK" { default = "16" }
 
 # SSH bastion related variablee

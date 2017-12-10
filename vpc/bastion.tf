@@ -8,6 +8,6 @@ resource "aws_instance" "bastion" {
   associate_public_ip_address = true
   tags {
     Name = "bastion_ec2_instance"
-    Environment = "${var.environment}"
+    Environment = "${terraform.workspace}"
   }
 }
