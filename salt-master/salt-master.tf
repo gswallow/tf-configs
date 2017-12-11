@@ -2,6 +2,7 @@ resource "aws_launch_configuration" "salt_master" {
   name_prefix                 = "salt_master"
   instance_type               = "t2.micro"
   associate_public_ip_address = "${var.associate_public_ip_address}"
+  iam_instance_profile        = "${aws_iam_instance_profile.salt_master.id}" 
   security_groups             = [ "${data.aws_security_group.selected.id}" ]
   user_data                   = "${file("user-data/master.sh")}"
   key_name                    = "${var.SSH_KEY}"
