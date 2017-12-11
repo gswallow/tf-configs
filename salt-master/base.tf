@@ -1,4 +1,5 @@
 provider "aws" {}
+provider "template" {}
 
 data "aws_region" "current" {
  current = true
