@@ -18,7 +18,7 @@ terraform {
   backend "s3" {
     bucket         = "${org}-tf-state-store"
     region         = "${AWS_REGION}"
-    key            = "${PROJECT_NAME}"
+    key            = "${PROJECT_NAME}/terraform.tfstate"
     dynamodb_table = "terraform_locks"
   }
 }
