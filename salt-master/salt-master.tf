@@ -33,3 +33,8 @@ resource "aws_autoscaling_group" "salt_master" {
     propagate_at_launch = true
   }
 }
+
+resource "aws_autoscaling_attachment" "salt_master_elb" {
+  autoscaling_group_name = "${aws_autoscaling_group.salt_master.id}"
+  elb = "${aws_elb.salt_master.id}"
+}

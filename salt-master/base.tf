@@ -24,6 +24,14 @@ data "aws_security_group" "selected" {
   name = "private"
 }
 
+data "aws_route53_zone" "internal" {
+  vpc_id = "${data.aws_vpc.selected.id}"
+  name = "${format("%s.%s", terraform.workspace, var.ORG)}"
+  tags {
+    Environment = "${terraform.workspace}"
+  }
+}
+
 data "aws_ami" "redhat" {
   most_recent = true
   owners = [ "309956199498" ]
