@@ -6,7 +6,7 @@ require 'aws-sdk-s3'
 die "Must set AWS_ALTERNATE_ACCOUNTS" if !ENV.has_key?('AWS_ALTERNATE_ACCOUNTS')
 die "Must set org" if !ENV.has_key?('org')
 
-%w(salt-keys tf-state-store).each do |target|
+%w(tf-state-store).each do |target|
   bucket_policy = { 
     Version: '2012-10-17',
     Statement: [
