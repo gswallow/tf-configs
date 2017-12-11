@@ -1,5 +1,5 @@
 data "template_file" "user_data" {
-  template = "${file("user-data/master.tpl")}"
+  template = "${file("user-data/master.sh.tpl")}"
   vars {
     ORG = "${var.ORG}"
     ENV = "${terraform.workspace}"
