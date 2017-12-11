@@ -1,6 +1,7 @@
 resource "aws_vpc" "main" {
   cidr_block = "172.${var.CIDR_BLOCK}.0.0/16"
   enable_dns_support = "true"
+  enable_dns_hostnames = "true"
   tags {
     Environment = "${terraform.workspace}"
     Name = "${format("%s-%s-172.%s.0.0-16", var.ORG, terraform.workspace, var.CIDR_BLOCK)}"
