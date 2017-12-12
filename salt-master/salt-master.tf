@@ -47,3 +47,11 @@ resource "aws_autoscaling_attachment" "salt_master_elb" {
   autoscaling_group_name = "${aws_autoscaling_group.salt_master.id}"
   elb = "${aws_elb.salt_master.id}"
 }
+
+output "autoscaling_group_arn" {
+  value = "${aws_autoscaling_gorup.salt_master.arn}"
+}
+
+output "autoscaling_group_name" {
+  value = "${aws_autoscaling_group.salt_master.id}"
+}

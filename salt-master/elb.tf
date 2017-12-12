@@ -35,3 +35,11 @@ resource "aws_route53_record" "salt_master_elb" {
   ttl = "60"
   records = [ "${aws_elb.salt_master.dns_name}" ]
 }
+
+output "elb_arn" {
+  value = "${aws_elb.salt_master.arn}"
+}
+
+output "elb_hostname" {
+  value = "${aws_elb.salt_master.dns_name}"
+}
