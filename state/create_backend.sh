@@ -13,7 +13,7 @@ else
 	--provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1
 fi
 
-cat <<EOF > ./backend_config.tf
+cat <<EOF > ./_backend.tf
 terraform {
   backend "s3" {
     bucket         = "${org}-tf-state-store"
