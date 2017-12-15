@@ -1,9 +1,12 @@
 #!/bin/bash
-ENV=${ENV}
-ORG=${ORG}
-DOMAIN=${DOMAIN}
 
 SALT_VERSION=$${SALT_VERSION:-2017.7}
+ORG=${ORG}
+ENV=${ENV}
+REALM=${REALM}
+JOIN_DOMAIN=${JOIN_DOMAIN}
+JOIN_USER=${JOIN_USER}
+JOIN_PASS=${JOIN_PASS}
 
 set -o errexit -o errtrace -o pipefail
 trap signal_and_exit ERR
@@ -50,14 +53,36 @@ rpm -i https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 
 yum -y install python-pip setuptools awscli
 
+if [ "X$$JOIN_DOMAIN" == "Xtrue" ]; then
+  yum -y install \
+   sssd \
+   realmd \
+   krb5-workstation \
+   oddjob \
+   oddjob-mkhomedir \
+   samba-common-tools \
+   adcli
+
+  echo "${JOIN_PASS}" \
+   | realm join -U $${JOIN_USER}@$${REALM} $${REALM} \
+     --client-software=sssd \
+     --server-software=active-directory \
+     --membership-software=adcli
+fi
+
 aws s3 cp s3://$${ORG}-$${ENV}-salt-$$(my_aws_region)/public/master.finger .
 finger=$$(cat master.finger)
 
 curl -L https://bootstrap.saltstack.com -o install_salt.sh
 sh install_salt.sh -X stable "$$SALT_VERSION"
 
-cat > /etc/salt/minion <<EOF
-master: salt.$${DOMAIN}
+if [ "X$$JOIN_DOMAIN" == "Xtrue" ]; then
+  echo 'master: salt' > /etc/salt/minion
+else
+  echo "master: salt.$${ENV}.$${ORG}}" > /etc/salt/minion
+fi
+
+cat >> /etc/salt/minion <<EOF
 master_finger: $${finger}
 grains:
 ${GRAINS}

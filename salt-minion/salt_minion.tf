@@ -3,7 +3,10 @@ data "template_file" "user_data" {
   vars {
     ORG = "${var.ORG}"
     ENV = "${terraform.workspace}"
-    DOMAIN = "${data.aws_route53_zone.internal.comment}" # The use of comment is a code smell
+    REALM = "${format("%s.%s", upper(terraform.workspace), upper(var.ORG))}"
+    JOIN_DOMAIN = "${var.JOIN_DOMAIN}"
+    JOIN_USER = "${var.JOIN_USER}"
+    JOIN_PASS = "${var.JOIN_PASS}"
     GRAINS = <<EOF
   roles:
     - test
