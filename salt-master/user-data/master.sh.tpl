@@ -66,6 +66,8 @@ if [ "X$$JOIN_DOMAIN" == "Xtrue" ]; then
    samba-common-tools \
    adcli
 
+  hostnamectl set-hostname salt.$${ENV}.$${ORG}
+
   echo "${JOIN_PASS}" \
    | realm join -U $${JOIN_USER}@$${REALM} $${REALM} \
      --client-software=sssd \
