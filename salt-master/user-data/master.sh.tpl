@@ -3,6 +3,10 @@
 SALT_VERSION=$${SALT_VERSION:-2017.7}
 ORG=${ORG}
 ENV=${ENV}
+REALM=${REALM}
+JOIN_DOMAIN=${JOIN_DOMAIN}
+JOIN_USER=${JOIN_USER}
+JOIN_PASS=${JOIN_PASS}
 
 set -o errexit -o errtrace -o pipefail
 trap signal_and_exit ERR
@@ -51,6 +55,24 @@ yum -y install \
         python-pip \
         systemd-python \
         awscli
+
+if [ "X$$JOIN_DOMAIN" == "Xtrue" ]; then
+  yum -y install \
+   sssd \
+   realmd \
+   krb5-workstation \
+   oddjob \
+   oddjob-mkhomedir \
+   samba-common-tools \
+   adcli
+
+  echo "${JOIN_PASS}" \
+   | realm join -U $${JOIN_USER}@$${REALM} $${REALM} \
+     --client-software=sssd \
+     --server-software=active-directory \
+     --membership-software=adcli \
+     --computer-name=salt
+fi
 
 aws s3 cp s3://$${ORG}-$${ENV}-salt-$$(my_aws_region)/master/master.pem /tmp/master.pem
 aws s3 cp s3://$${ORG}-$${ENV}-salt-$$(my_aws_region)/master/master.pub /tmp/master.pub
