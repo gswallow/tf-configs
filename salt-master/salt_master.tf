@@ -48,6 +48,7 @@ resource "aws_autoscaling_group" "salt_master" {
 }
 
 resource "aws_autoscaling_attachment" "salt_master_elb" {
+  count = "${var.JOIN_DOMAIN == "true" ? 0 : 1 }"
   autoscaling_group_name = "${aws_autoscaling_group.salt_master.id}"
   elb = "${aws_elb.salt_master.id}"
 }

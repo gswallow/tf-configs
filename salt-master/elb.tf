@@ -1,4 +1,5 @@
 resource "aws_elb" "salt_master" {
+  count = "${var.JOIN_DOMAIN == "true" ? 0 : 1 }"
   name = "salt-master-elb"
   internal = true
   subnets = [ "${data.aws_subnet_ids.selected.ids}" ]
@@ -29,17 +30,10 @@ resource "aws_elb" "salt_master" {
 }
 
 resource "aws_route53_record" "salt_master_elb" {
+  count = "${var.JOIN_DOMAIN == "true" ? 0 : 1 }"
   zone_id = "${data.aws_route53_zone.internal.zone_id}"
   name = "salt.${data.aws_route53_zone.internal.name}"
   type = "CNAME"
   ttl = "60"
   records = [ "${aws_elb.salt_master.dns_name}" ]
-}
-
-output "elb_arn" {
-  value = "${aws_elb.salt_master.arn}"
-}
-
-output "elb_hostname" {
-  value = "${aws_elb.salt_master.dns_name}"
 }
