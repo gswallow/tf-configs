@@ -84,9 +84,11 @@ fi
 
 cat >> /etc/salt/minion <<EOF
 master_finger: $${finger}
-grains:
-${GRAINS}
 failhard: True
+EOF
+
+cat > /etc/salt/grains <<EOF
+${GRAINS}
 EOF
 
 systemctl start salt-minion.service
