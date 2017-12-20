@@ -4,6 +4,9 @@ variable "SSH_KEY" { default = "bootstrap" }
 variable "JOIN_DOMAIN" { default = "false" }
 variable "JOIN_USER" { default = "joiner" }
 variable "JOIN_PASS" { default = "little pigs little pigs let me in" }
+variable "GITFS_BACKEND" { default = "false" }
+variable "GITFS_REMOTE" { default = "''" }
+variable "GITFS_PASSPHRASE" { default = "''" }
 
 # Defaults
 variable "max_size" { default = "1" }

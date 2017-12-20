@@ -6,7 +6,10 @@ ENV=${ENV}
 REALM=${REALM}
 JOIN_DOMAIN=${JOIN_DOMAIN}
 JOIN_USER=${JOIN_USER}
-JOIN_PASS=${JOIN_PASS}
+JOIN_PASS='${JOIN_PASS}'
+GITFS_BACKEND=${GITFS_BACKEND}
+GITFS_REMOTE=${GITFS_REMOTE}
+GITFS_PASSPHRASE=${GITFS_PASSPHRASE}
 
 set -o errexit -o errtrace -o pipefail
 trap signal_and_exit ERR
@@ -68,7 +71,7 @@ if [ "X$$JOIN_DOMAIN" == "Xtrue" ]; then
 
   hostnamectl set-hostname salt.$${ENV}.$${ORG}
 
-  echo "${JOIN_PASS}" \
+  echo "$${JOIN_PASS}" \
    | realm join -U $${JOIN_USER}@$${REALM} $${REALM} \
      --client-software=sssd \
      --server-software=active-directory \
@@ -127,6 +130,39 @@ failhard: True
 # One of 'garbage', 'trace', 'debug', info', 'warning', 'error', 'critical'.
 log_level: info
 EOF
+
+if [ "X$$GITFS_BACKEND" == "Xtrue" ]; then
+  yum -y install python-pygit2 git
+  mkdir /etc/salt/gitfs
+  aws s3 cp s3://$${ORG}-$${ENV}-salt-$$(my_aws_region)/master/gitfs.pem /etc/salt/gitfs/gitfs.pem
+  aws s3 cp s3://$${ORG}-$${ENV}-salt-$$(my_aws_region)/master/gitfs.pub /etc/salt/gitfs/gitfs.pub
+  chown -R root:root /etc/salt/gitfs
+  chmod -R go-rwx /etc/salt/gitfs
+
+  cat >> /etc/salt/master <<EOF
+fileserver_backend:
+  - git
+gitfs_pubkey: /etc/salt/gitfs/gitfs.pub
+gitfs_privkey: /etc/salt/gitfs/gitfs.pem
+gitfs_passphrase: $${GITFS_PASSPHRASE}
+gitfs_root: salt
+gitfs_saltenv:
+  - dev:
+    - mountpoint: salt://gitfs-dev
+    - ref: develop
+  - test:
+    - mountpoint: salt://gitfs-test
+    - ref: test
+  - staging:
+    - mountpoint: salt://gitfs-staging
+    - ref: staging
+  - prod:
+    - mountpoint: salt://gitfs-prod
+    - ref: prod
+gitfs_remotes:
+  - $${GITFS_REMOTE}
+EOF
+fi
 
 systemctl restart salt-master.service
 systemctl restart salt-minion.service

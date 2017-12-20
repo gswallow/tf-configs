@@ -84,6 +84,8 @@ fi
 
 cat >> /etc/salt/minion <<EOF
 master_finger: $${finger}
+environment: $${ENV}
+pillarenv: $${ENV}
 failhard: True
 EOF
 
