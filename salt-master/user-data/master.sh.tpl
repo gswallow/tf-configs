@@ -132,7 +132,7 @@ log_level: info
 EOF
 
 if [ "X$$GITFS_BACKEND" == "Xtrue" ]; then
-  yum -y install python-pygit2 git
+  yum -y install python-pygit2 git python-dulwich
   mkdir /etc/salt/gitfs
   aws s3 cp s3://$${ORG}-$${ENV}-salt-$$(my_aws_region)/master/gitfs.pem /etc/salt/gitfs/gitfs.pem
   aws s3 cp s3://$${ORG}-$${ENV}-salt-$$(my_aws_region)/master/gitfs.pub /etc/salt/gitfs/gitfs.pub
@@ -145,19 +145,15 @@ fileserver_backend:
 gitfs_pubkey: /etc/salt/gitfs/gitfs.pub
 gitfs_privkey: /etc/salt/gitfs/gitfs.pem
 gitfs_passphrase: $${GITFS_PASSPHRASE}
-gitfs_root: salt
+gitfs_root: salt/states
 gitfs_saltenv:
   - dev:
-    - mountpoint: salt://gitfs-dev
     - ref: develop
   - test:
-    - mountpoint: salt://gitfs-test
     - ref: test
   - staging:
-    - mountpoint: salt://gitfs-staging
     - ref: staging
   - prod:
-    - mountpoint: salt://gitfs-prod
     - ref: prod
 gitfs_remotes:
   - $${GITFS_REMOTE}

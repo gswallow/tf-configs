@@ -87,6 +87,7 @@ master_finger: $${finger}
 environment: $${ENV}
 pillarenv: $${ENV}
 failhard: True
+top_file_merging_strategy: same
 EOF
 
 cat > /etc/salt/grains <<EOF
