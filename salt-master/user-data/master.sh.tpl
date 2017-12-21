@@ -159,22 +159,22 @@ gitfs_remotes:
   - $${GITFS_REMOTE}
 ext_pillar:
   - git:
-    - dev $${GITFS_REMOTE}
+    - dev $${GITFS_REMOTE}:
       - root: pillar
       - privkey: /etc/salt/gitfs/gitfs.pem
       - pubkey: /etc/salt/gitfs/gitfs.pub
       - env: dev
-    - test $${GITFS_REMOTE}
+    - test $${GITFS_REMOTE}:
       - root: pillar
       - privkey: /etc/salt/gitfs/gitfs.pem
       - pubkey: /etc/salt/gitfs/gitfs.pub
       - env: test
-    - staging $${GITFS_REMOTE}
+    - staging $${GITFS_REMOTE}:
       - root: pillar
       - privkey: /etc/salt/gitfs/gitfs.pem
       - pubkey: /etc/salt/gitfs/gitfs.pub
       - env: staging
-    - prod $${GITFS_REMOTE}
+    - prod $${GITFS_REMOTE}:
       - root: pillar
       - privkey: /etc/salt/gitfs/gitfs.pem
       - pubkey: /etc/salt/gitfs/gitfs.pub
