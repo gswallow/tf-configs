@@ -95,3 +95,4 @@ ${GRAINS}
 EOF
 
 systemctl start salt-minion.service
+salt-call state.highstate 
