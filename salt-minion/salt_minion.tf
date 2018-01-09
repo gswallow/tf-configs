@@ -8,7 +8,7 @@ data "template_file" "user_data" {
     JOIN_USER = "${var.JOIN_USER}"
     JOIN_PASS = "${var.JOIN_PASS}"
     GRAINS = <<EOF
-roles:
+role:
   - test
 environment: ${terraform.workspace}
 EOF

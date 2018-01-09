@@ -145,7 +145,7 @@ fileserver_backend:
 gitfs_pubkey: /etc/salt/gitfs/gitfs.pub
 gitfs_privkey: /etc/salt/gitfs/gitfs.pem
 gitfs_passphrase: $${GITFS_PASSPHRASE}
-gitfs_root: states
+gitfs_root: salt
 gitfs_saltenv:
   - dev:
     - ref: develop
@@ -160,22 +160,22 @@ gitfs_remotes:
 ext_pillar:
   - git:
     - develop $${GITFS_REMOTE}:
-      - root: pillar
+      - root: pillar/dev
       - privkey: /etc/salt/gitfs/gitfs.pem
       - pubkey: /etc/salt/gitfs/gitfs.pub
       - env: dev
     - test $${GITFS_REMOTE}:
-      - root: pillar
+      - root: pillar/test
       - privkey: /etc/salt/gitfs/gitfs.pem
       - pubkey: /etc/salt/gitfs/gitfs.pub
       - env: test
     - staging $${GITFS_REMOTE}:
-      - root: pillar
+      - root: pillar/staging
       - privkey: /etc/salt/gitfs/gitfs.pem
       - pubkey: /etc/salt/gitfs/gitfs.pub
       - env: staging
     - prod $${GITFS_REMOTE}:
-      - root: pillar
+      - root: pillar/prod
       - privkey: /etc/salt/gitfs/gitfs.pem
       - pubkey: /etc/salt/gitfs/gitfs.pub
       - env: prod
