@@ -100,6 +100,8 @@ chmod 755 /tmp/ansible/hosts
 
 cat > /tmp/ansible/requirements.yml <<EOF
 ---
+- src: zaxos.lvm-ansible-role
+  name: volumes
 - src: bennojoy.ntp
   name: ntp
 - src: https://github.com/gswallow/ansible-satellite6-install.git
@@ -112,17 +114,45 @@ cat > /tmp/ansible/config.yml <<EOF
 ---
 - hosts: satellite-server
   roles:
-    - role: 'ntp'
+    - role: volumes
+    - role: ntp
       ntp_server:
-        - '0.pool.ntp.org'
-    - role: "satellite-deployment"
+        - '169.254.169.123'
+    - { role: satellite-deployment, tags: ['install', 'rhn'] }
   vars_files:
     - "{{ satellite_deployment_vars }}"
 EOF
 
 cat > /tmp/ansible/seed <<EOF
 ---
-# MY SATELLITE ENVIRONMENT VARIABLES
+# Volumes
+lvm_volumes:
+  - vg_name: vg00
+    lv_name: pulp_cache
+    disk: xvdf
+    filesystem: xfs
+    mount: /var/cache/pulp
+    mount_options: defaults,noatime,nodiratime,discard
+  - vg_name: vg01
+    lv_name: pulp_storage
+    disk: xvdg
+    filesystem: xfs
+    mount: /var/lib/pulp
+    mount_options: defaults,noatime,nodiratime,discard
+  - vg_name: vg02
+    lv_name: mongodb
+    disk: xvdh
+    filesystem: xfs
+    mount: /var/lib/mongodb
+    mount_options: defaults,noatime,nodiratime,discard
+  - vg_name: vg03
+    lv_name: pgsql
+    disk: xvdi
+    filesystem: xfs
+    mount: /var/lib/pgsql
+    mount_options: defaults,noatime,nodiratime,discard
+
+# Satellite
 # main vars
 satellite_deployment_hostname_short: "satellite"
 satellite_deployment_hostname_full: "satellite.ivytech.edu"
@@ -162,4 +192,4 @@ yum -y install ansible git
 cd /tmp/ansible 
 ansible-galaxy install -f -r requirements.yml -p roles/
 
-HOSTGROUP=satellite-server ansible-playbook -i /tmp/ansible/hosts -e '{satellite_deployment_vars: /tmp/ansible/seed}' --tags=install,rhn config.yml -c local
+HOSTGROUP=satellite-server ansible-playbook -i /tmp/ansible/hosts -e '{satellite_deployment_vars: /tmp/ansible/seed}' config.yml -c local
