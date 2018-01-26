@@ -16,6 +16,7 @@ resource "aws_instance" "satellite" {
   ami                    = "${data.aws_ami.redhat.id}"
   key_name               = "${var.SSH_KEY}"
   vpc_security_group_ids = [ "${aws_security_group.satellite.id}" ]
+  iam_instance_profile   = "${aws_iam_instance_profile.satellite.id}"
   subnet_id              = "${data.aws_subnet_ids.selected.ids[0]}"
   user_data              = "${data.template_file.user_data.rendered}"
   instance_type          = "r4.xlarge"

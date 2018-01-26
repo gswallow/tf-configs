@@ -2,10 +2,6 @@
 
 ORG=${ORG}
 ENV=${ENV}
-REALM=${REALM}
-JOIN_DOMAIN=${JOIN_DOMAIN}
-JOIN_USER=${JOIN_USER}
-JOIN_PASS=${JOIN_PASS}
 RHN_USER=${RHN_USER}
 RHN_PASS=${RHN_PASS}
 
@@ -50,26 +46,16 @@ for i in rhscl extras optional ; do
   yum-config-manager --enable rhui-REGION-rhel-server-$$i > /dev/null 2>&1
 done
 
-yum -y install python27-python-pip python-setuptools awscli
-
-if [ "X$$JOIN_DOMAIN" == "Xtrue" ]; then
-  yum -y install \
-   sssd \
-   realmd \
-   krb5-workstation \
-   oddjob \
-   oddjob-mkhomedir \
-   samba-common-tools \
-   adcli
-
-  echo "${JOIN_PASS}" \
-   | realm join -U $${JOIN_USER}@$${REALM} $${REALM} \
-     --client-software=sssd \
-     --server-software=active-directory \
-     --membership-software=adcli
-fi
+sudo rpmkeys --import https://getfedora.org/static/352C64E5.txt
+rpm -i https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+yum -y install python-pip python-setuptools awscli
+yum-config-manager --disable epel
 
 mkdir -p /tmp/ansible
+for i in manifest.zip satellite.crt satellite.csr satellite.key satellite-ca.crt ; do 
+  aws s3 cp s3://$${ORG}-satellite-artifacts/$i /tmp/ansible/$i
+done
+
 
 cat > /tmp/ansible/hosts <<EOF
 #!/usr/bin/python
@@ -79,7 +65,6 @@ cat > /tmp/ansible/hosts <<EOF
 import sys
 import os
 import json
-
 
 def main():
     inventory = {"_meta": {"hostvars": {}}}
@@ -105,8 +90,7 @@ cat > /tmp/ansible/requirements.yml <<EOF
 - src: bennojoy.ntp
   name: ntp
 - src: https://github.com/gswallow/ansible-satellite6-install.git
-  # version is draft for testing before we push changes to master
-  version: master
+  version: deconstruct
   name: satellite-deployment
 EOF
 
@@ -118,78 +102,13 @@ cat > /tmp/ansible/config.yml <<EOF
     - role: ntp
       ntp_server:
         - '169.254.169.123'
-    - { role: satellite-deployment, tags: ['install', 'rhn'] }
+    - role: satellite-deployment
   vars_files:
     - "{{ satellite_deployment_vars }}"
-EOF
-
-cat > /tmp/ansible/seed <<EOF
----
-# Volumes
-lvm_volumes:
-  - vg_name: vg00
-    lv_name: pulp_cache
-    disk: xvdf
-    filesystem: xfs
-    mount: /var/cache/pulp
-    mount_options: defaults,noatime,nodiratime,discard
-  - vg_name: vg01
-    lv_name: pulp_storage
-    disk: xvdg
-    filesystem: xfs
-    mount: /var/lib/pulp
-    mount_options: defaults,noatime,nodiratime,discard
-  - vg_name: vg02
-    lv_name: mongodb
-    disk: xvdh
-    filesystem: xfs
-    mount: /var/lib/mongodb
-    mount_options: defaults,noatime,nodiratime,discard
-  - vg_name: vg03
-    lv_name: pgsql
-    disk: xvdi
-    filesystem: xfs
-    mount: /var/lib/pgsql
-    mount_options: defaults,noatime,nodiratime,discard
-
-# Satellite
-# main vars
-satellite_deployment_hostname_short: "satellite"
-satellite_deployment_hostname_full: "satellite.ivytech.edu"
-satellite_deployment_admin_username: "admin"
-satellite_deployment_admin_password: "123456"
-satellite_deployment_organization: "ivytech.edu"
-satellite_deployment_location: "Indianapolis"
-satellite_deployment_version: 6.2
-
-#satellite_deployment_plugin_ports
-
-# install
-satellite_deployment_plugin_packages:
-  - "foreman-discovery-image"
-
-# registration vars
-satellite_deployment_rhn_user: "$${RHN_USER}"
-satellite_deployment_rhn_password: "$${RHN_PASS}"
-
-# answers for sattelite installer
-satellite_deployment_answers:
-  "foreman-initial-organization": "{{ satellite_deployment_organization }}"
-  "foreman-initial-location": "{{ satellite_deployment_location }}"
-  "foreman-admin-username": "{{ satellite_deployment_admin_username }}"
-  "foreman-admin-password": "{{ satellite_deployment_admin_password }}"
-  "foreman-proxy-dns": "false"
-  "foreman-proxy-dhcp": "false"
-  "foreman-proxy-tftp": "false"
-  "foreman-proxy-puppetca": "false"
-  "capsule-puppet": "false"
-
-# configure_satellite:
-satellite_deployment_manifest_path: "http://my.local.server/sat-manifest.zip"
 EOF
 
 yum -y install ansible git
 cd /tmp/ansible 
 ansible-galaxy install -f -r requirements.yml -p roles/
 
-HOSTGROUP=satellite-server ansible-playbook -i /tmp/ansible/hosts -e '{satellite_deployment_vars: /tmp/ansible/seed}' config.yml -c local
+HOSTGROUP=satellite-server ansible-playbook -i /tmp/ansible/hosts -e '{satellite_deployment_vars: /tmp/ansible/seed}' config.yml --skip-tags firewall,capsule,set_network -c local

@@ -28,6 +28,10 @@ data "aws_route53_zone" "internal" {
   }
 }
 
+data "aws_s3_bucket" "satellite" {
+  bucket = "${var.ORG}-satellite-artifacts"
+}
+
 data "aws_ami" "redhat" {
   most_recent = true
   owners = [ "309956199498" ]

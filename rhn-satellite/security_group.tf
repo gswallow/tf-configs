@@ -9,6 +9,12 @@ resource "aws_security_group" "satellite" {
     cidr_blocks = [ "${var.SSH_CIDR}" ]
   }
   ingress {
+    from_port = 53
+    to_port = 53
+    protocol = "TCP"
+    cidr_blocks = [ "0.0.0.0/0" ]
+  }
+  ingress {
     from_port = 80
     to_port = 80
     protocol = "TCP"
@@ -27,8 +33,20 @@ resource "aws_security_group" "satellite" {
     cidr_blocks = [ "0.0.0.0/0" ]
   }
   ingress {
-    from_port = 5647 
+    from_port = 5646 
     to_port = 5647
+    protocol = "TCP"
+    cidr_blocks = [ "0.0.0.0/0" ]
+  }
+  ingress {
+    from_port = 5671
+    to_port = 5671
+    protocol = "TCP"
+    cidr_blocks = [ "0.0.0.0/0" ]
+  }
+  ingress {
+    from_port = 5674
+    to_port = 5674
     protocol = "TCP"
     cidr_blocks = [ "0.0.0.0/0" ]
   }
@@ -48,6 +66,18 @@ resource "aws_security_group" "satellite" {
     from_port = 9090 
     to_port = 9090
     protocol = "TCP"
+    cidr_blocks = [ "0.0.0.0/0" ]
+  }
+  ingress {
+    from_port = 53
+    to_port = 53
+    protocol = "UDP"
+    cidr_blocks = [ "0.0.0.0/0" ]
+  }
+  ingress {
+    from_port = 67
+    to_port = 69 
+    protocol = "UDP"
     cidr_blocks = [ "0.0.0.0/0" ]
   }
   ingress {
