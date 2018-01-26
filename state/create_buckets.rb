@@ -3,10 +3,10 @@
 require 'json'
 require 'aws-sdk-s3'
 
-die "Must set AWS_ALTERNATE_ACCOUNTS" if !ENV.has_key?('AWS_ALTERNATE_ACCOUNTS')
-die "Must set org" if !ENV.has_key?('org')
+abort "Must set AWS_ALTERNATE_ACCOUNTS" if !ENV.has_key?('AWS_ALTERNATE_ACCOUNTS')
+abort "Must set org" if !ENV.has_key?('org')
 
-%w(tf-state-store).each do |target|
+%w(tf-state-store satellite-artifacts).each do |target|
   bucket_policy = { 
     Version: '2012-10-17',
     Statement: [
@@ -37,7 +37,7 @@ die "Must set org" if !ENV.has_key?('org')
   }
   
   s3 = Aws::S3::Client.new
-  if s3.list_buckets.buckets.collect { |b| b.name if b.name == target }.compact.empty?
+  if s3.list_buckets.buckets.collect { |b| b.name if b.name == "#{ENV['org']}-#{target}" }.compact.empty?
     resp = s3.create_bucket( { bucket: "#{ENV['org']}-#{target}", acl: 'private' })
     bucket = resp.location.sub('/', '')
   
