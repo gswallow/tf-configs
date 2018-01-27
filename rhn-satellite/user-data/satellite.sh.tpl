@@ -52,7 +52,7 @@ yum -y install python-pip python-setuptools awscli
 yum-config-manager --disable epel
 
 mkdir -p /tmp/ansible
-for i in manifest.zip satellite.crt satellite.csr satellite.key satellite-ca.crt ; do 
+for i in manifest.zip satellite.crt satellite.csr satellite.key satellite-ca.crt seed; do 
   aws s3 cp s3://$${ORG}-satellite-artifacts/$i /tmp/ansible/$i
 done
 
