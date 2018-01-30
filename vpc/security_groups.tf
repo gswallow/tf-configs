@@ -42,6 +42,18 @@ resource "aws_security_group" "private" {
     security_groups = [ "${aws_security_group.ssh.id}" ]
     self = true
   }
+  ingress {
+    from_port = 22
+    to_port = 22
+    protocol = "tcp"
+    cidr_blocks = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
+  }
+  ingress {
+    from_port = 3389
+    to_port = 3389 
+    protocol = "tcp"
+    cidr_blocks = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
+  }
   egress {
     from_port = 0
     to_port = 0
