@@ -71,6 +71,7 @@ resource "aws_iam_role_policy" "scout2" {
         "elasticfilesystem:DescribeTags",
         "elasticloadbalancing:DescribeLoadBalancerAttributes",
         "elasticloadbalancing:DescribeLoadBalancers",
+        "elasticloadbalancing:DescribeListeners",
         "elasticloadbalancing:DescribeSSLPolicies",
         "elasticmapreduce:DescribeCluster",
         "elasticmapreduce:ListClusters",
