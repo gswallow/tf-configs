@@ -14,7 +14,7 @@ You should only need to do this once.
 For each project, change into the project directory, then run:
 
 ```
-../state/create_backend.sh
+../../state/create_backend.sh
 terraform init
 terraform workspace new $environment
 ```
