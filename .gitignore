@@ -2,3 +2,6 @@
 terraform.tfstate*
 backend_config.tf
 keys
+*~
+*.swp
+*.swo

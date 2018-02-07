@@ -16,3 +16,19 @@ output "public_zone_id" {
   value = "${aws_route53_zone.public.zone_id}" 
   description = "Route53 hosted zone ID"
 }
+
+# https://github.com/hashicorp/terraform/issues/17156
+resource "aws_route53_record" "txt" {
+  name = "creator"
+  type = "TXT"
+  zone_id = "${aws_route53_zone.public.id}"
+  ttl = 300
+  records = [
+    "Created by terraform"
+  ]
+  depends_on = [
+    "aws_route53_zone.public",
+    "aws_route53_query_log.public",
+    "aws_cloudwatch_log_group.public"
+  ]
+}
