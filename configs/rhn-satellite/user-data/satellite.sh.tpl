@@ -52,7 +52,7 @@ yum -y install python-pip python-setuptools awscli
 yum-config-manager --disable epel
 
 mkdir -p /tmp/ansible
-for i in manifest.zip satellite.crt satellite.csr satellite.key satellite-ca.crt seed; do 
+for i in manifest.zip satellite.crt satellite.csr satellite.key satellite-ca.crt requirements.yml seed; do 
   aws s3 cp s3://$${ORG}-satellite-artifacts/$i /tmp/ansible/$i
 done
 
@@ -82,17 +82,6 @@ if __name__ == '__main__':
     sys.exit(main())
 EOF
 chmod 755 /tmp/ansible/hosts
-
-cat > /tmp/ansible/requirements.yml <<EOF
----
-- src: zaxos.lvm-ansible-role
-  name: volumes
-- src: bennojoy.ntp
-  name: ntp
-- src: https://github.com/gswallow/ansible-satellite6-install.git
-  version: deconstruct
-  name: satellite-deployment
-EOF
 
 cat > /tmp/ansible/config.yml <<EOF
 ---
