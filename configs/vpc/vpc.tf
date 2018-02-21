@@ -1,10 +1,10 @@
 resource "aws_vpc" "main" {
-  cidr_block = "172.${var.CIDR_BLOCK}.0.0/16"
+  cidr_block = "172.${var.CIDR_BLOCK}.${var.CIDR_PORTION}.0/18"
   enable_dns_support = "true"
   enable_dns_hostnames = "true"
   tags {
     Environment = "${terraform.workspace}"
-    Name = "${format("%s-%s-172.%s.0.0-16", var.ORG, terraform.workspace, var.CIDR_BLOCK)}"
+    Name = "${format("%s-%s-172.%s.%s.0-16", var.ORG, terraform.workspace, var.CIDR_BLOCK, var.CIDR_PORTION)}"
   }
 }
 
@@ -20,7 +20,7 @@ resource "aws_subnet" "public" {
   count = "${length(data.aws_availability_zones.available.names)}"
   vpc_id = "${aws_vpc.main.id}"
   availability_zone = "${element(data.aws_availability_zones.available.names, count.index)}"
-  cidr_block = "172.${var.CIDR_BLOCK}.${count.index * 4}.0/22"
+  cidr_block = "172.${var.CIDR_BLOCK}.${var.CIDR_PORTION + count.index}.0/24"
   tags {
     Environment = "${terraform.workspace}"
     Type = "public"
@@ -64,7 +64,7 @@ resource "aws_subnet" "nat" {
   count = "${length(data.aws_availability_zones.available.names)}"
   vpc_id = "${aws_vpc.main.id}"
   availability_zone = "${element(data.aws_availability_zones.available.names, count.index)}"
-  cidr_block = "172.${var.CIDR_BLOCK}.${count.index * 4 + 64}.0/22"
+  cidr_block = "172.${var.CIDR_BLOCK}.${var.CIDR_PORTION + 8 + count.index * 4}.0/22"
   tags {
     Environment = "${terraform.workspace}"
     Type = "nat"
@@ -96,7 +96,7 @@ resource "aws_subnet" "private" {
   count = "${length(data.aws_availability_zones.available.names)}"
   vpc_id = "${aws_vpc.main.id}"
   availability_zone = "${element(data.aws_availability_zones.available.names, count.index)}"
-  cidr_block = "172.${var.CIDR_BLOCK}.${count.index * 4 + 192}.0/22"
+  cidr_block = "172.${var.CIDR_BLOCK}.${var.CIDR_PORTION + 60 - count.index * 4}.0/22"
   tags {
     Environment = "${terraform.workspace}"
     Type = "private"

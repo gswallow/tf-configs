@@ -1,6 +1,7 @@
 # Variables imported as TF_VAR_*
 variable "ORG" { default = "ivytech" }
 variable "CIDR_BLOCK" { default = "16" }
+variable "CIDR_PORTION" { default = "0" }
 
 # SSH bastion related variablee
 variable "CREATE_BASTION" { default = false }
