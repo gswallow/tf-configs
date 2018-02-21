@@ -97,7 +97,15 @@ cat > /tmp/ansible/config.yml <<EOF
 EOF
 
 yum -y install ansible git
+cat >> /etc/ansible/ansible.cfg <<EOF
+log_path = /var/log/ansible.log
+EOF
+
 cd /tmp/ansible 
 ansible-galaxy install -f -r requirements.yml -p roles/
-
-HOSTGROUP=satellite-server ansible-playbook -i /tmp/ansible/hosts -e '{satellite_deployment_vars: /tmp/ansible/seed}' config.yml --skip-tags firewall,capsule,set_network -c local
+HOSTGROUP=satellite-server \
+ ansible-playbook \
+ -i /tmp/ansible/hosts \
+ -e '{satellite_deployment_vars: /tmp/ansible/seed}' config.yml \
+ --skip-tags firewall,capsule,set_network \
+ -c local | tee /var/log/ansible.log 
