@@ -1,5 +1,6 @@
 provider "aws" {}
 provider "template" {}
+provider "random" {}
 
 data "aws_region" "current" {
  current = true
@@ -18,6 +19,11 @@ data "aws_subnet_ids" "selected" {
   tags {
     Type = "nat"
   }
+}
+
+resource "random_shuffle" "subnet" {
+  input = [ "${data.aws_subnet_ids.selected.ids}" ]
+  result_count = 1
 }
 
 data "aws_route53_zone" "internal" {
