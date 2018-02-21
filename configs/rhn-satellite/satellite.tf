@@ -31,7 +31,7 @@ resource "aws_instance" "satellite" {
   ebs_block_device = {
     device_name = "/dev/xvdg"
     volume_type = "gp2"
-    volume_size = 1000
+    volume_size = 500
   }
   ebs_block_device = {
     device_name = "/dev/xvdh"
