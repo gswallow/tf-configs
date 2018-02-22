@@ -10,7 +10,7 @@ resource "aws_vpn_connection" "main" {
 }
 
 resource "aws_vpn_connection_route" "datacenter" {
-  count = "${length(split(",", var.VPN_ROUTES))}"
-  destination_cidr_block = "${element(split(",", var.VPN_ROUTES), count.index)}"
+  count = "${length(var.VPN_ROUTES)}"
+  destination_cidr_block = "${element(var.VPN_ROUTES, count.index)}"
   vpn_connection_id = "${aws_vpn_connection.main.id}"
 }

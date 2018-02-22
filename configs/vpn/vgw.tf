@@ -6,6 +6,3 @@ resource "aws_vpn_gateway" "vpn_gw" {
     "Purpose" = "datacenter"
   }
 }
-
-resource "aws_route" "internal" {
-  
