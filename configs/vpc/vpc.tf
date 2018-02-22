@@ -4,7 +4,7 @@ resource "aws_vpc" "main" {
   enable_dns_hostnames = "true"
   tags {
     Environment = "${terraform.workspace}"
-    Name = "${format("%s-%s-172.%s.%s.0-16", var.ORG, terraform.workspace, var.CIDR_BLOCK, var.CIDR_PORTION)}"
+    Name = "${format("%s-%s-172.%s.%s.0-18", var.ORG, terraform.workspace, var.CIDR_BLOCK, var.CIDR_PORTION)}"
   }
 }
 
