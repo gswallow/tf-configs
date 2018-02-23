@@ -16,7 +16,7 @@ fi
 cat <<EOF > ./_backend.tf
 terraform {
   backend "s3" {
-    bucket         = "${org}-tf-state-store"
+    bucket         = "${ORG}-tf-state-store"
     region         = "${AWS_REGION}"
     key            = "${PROJECT_NAME}/terraform.tfstate"
     dynamodb_table = "terraform_locks"

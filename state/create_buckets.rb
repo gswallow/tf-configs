@@ -4,7 +4,7 @@ require 'json'
 require 'aws-sdk-s3'
 
 abort "Must set AWS_ALTERNATE_ACCOUNTS" if !ENV.has_key?('AWS_ALTERNATE_ACCOUNTS')
-abort "Must set org" if !ENV.has_key?('org')
+abort "Must set ORG" if !ENV.has_key?('ORG')
 
 %w(tf-state-store satellite-artifacts).each do |target|
   bucket_policy = { 
@@ -17,28 +17,28 @@ abort "Must set org" if !ENV.has_key?('org')
         Action: [
           "s3:ListBucket"
         ],
-        Resource: "arn:aws:s3:::#{ENV['org']}-#{target}"
+        Resource: "arn:aws:s3:::#{ENV['ORG']}-#{target}"
       },
       {
         Sid: "Terraform workspace state store access",
         Effect: "Allow",
         Principal: { AWS: ENV['AWS_ALTERNATE_ACCOUNTS'].split(',').collect { |a| "arn:aws:iam::#{a}:root" } },
         Action: "s3:*",
-        Resource: "arn:aws:s3:::#{ENV['org']}-#{target}/env:/*"
+        Resource: "arn:aws:s3:::#{ENV['ORG']}-#{target}/env:/*"
       },
       {
         Sid: "Global read access",
         Effect: "Allow",
         Principal: { AWS: ENV['AWS_ALTERNATE_ACCOUNTS'].split(',').collect { |a| "arn:aws:iam::#{a}:root" } },
         Action: "s3:GetObject",
-        Resource: "arn:aws:s3:::#{ENV['org']}-#{target}/*"
+        Resource: "arn:aws:s3:::#{ENV['ORG']}-#{target}/*"
       }
     ]
   }
   
   s3 = Aws::S3::Client.new
-  if s3.list_buckets.buckets.collect { |b| b.name if b.name == "#{ENV['org']}-#{target}" }.compact.empty?
-    resp = s3.create_bucket( { bucket: "#{ENV['org']}-#{target}", acl: 'private' })
+  if s3.list_buckets.buckets.collect { |b| b.name if b.name == "#{ENV['ORG']}-#{target}" }.compact.empty?
+    resp = s3.create_bucket( { bucket: "#{ENV['ORG']}-#{target}", acl: 'private' })
     bucket = resp.location.sub('/', '')
   
     vers = Aws::S3::BucketVersioning.new(bucket, {client: s3})
