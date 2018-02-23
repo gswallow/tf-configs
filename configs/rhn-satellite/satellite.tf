@@ -7,8 +7,6 @@ data "template_file" "user_data" {
     JOIN_DOMAIN = "${var.JOIN_DOMAIN}"
     JOIN_USER = "${var.JOIN_USER}"
     JOIN_PASS = "${var.JOIN_PASS}"
-    RHN_USER = "${var.RHN_USER}"
-    RHN_PASS = "${var.RHN_PASS}"
   }
 }
 

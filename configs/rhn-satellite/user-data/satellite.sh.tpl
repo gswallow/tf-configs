@@ -2,8 +2,6 @@
 
 ORG=${ORG}
 ENV=${ENV}
-RHN_USER=${RHN_USER}
-RHN_PASS=${RHN_PASS}
 
 set -o errexit -o errtrace -o pipefail
 trap signal_and_exit ERR
